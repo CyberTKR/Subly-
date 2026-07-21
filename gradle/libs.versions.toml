@@ -1,0 +1,22 @@
+[versions]
+kotlin = "1.9.24"
+agp = "8.5.0"
+junit = "4.13.2"
+coreKtx = "1.13.1"
+appcompat = "1.7.0"
+datastore = "1.1.1"
+lifecycle = "2.8.3"
+
+[libraries]
+junit = { module = "junit:junit", version.ref = "junit" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+androidx-datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycle" }
+androidx-material = { module = "com.google.android.material:material", version = "1.12.0" }
+androidx-cardview = { module = "androidx.cardview:cardview", version = "1.0.0" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#E61C1C1C"
+    android:padding="4dp">
+
+    <TextView android:id="@+id/timeReadout"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center" android:text="00:00 / -00:00"
+        android:textColor="#C8CCD0" android:textSize="12sp" android:paddingBottom="4dp"/>
+
+    <Button android:id="@+id/btnSync" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="⟳" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnRewindMin" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="«" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnRewind" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="‹" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnPlay" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="▶" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnForward" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="›" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnForwardMin" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="»" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnMinus" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="−" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnPlus" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="+" android:textColor="#FFFFFF" android:textSize="18sp"/>
+    <Button android:id="@+id/btnClose" style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minWidth="0dp" android:minHeight="0dp" android:padding="8dp"
+        android:text="✕" android:textColor="#FF6B6B" android:textSize="18sp"/>
+</LinearLayout>

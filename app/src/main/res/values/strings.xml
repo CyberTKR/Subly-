@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Subly+</string>
+    <string name="tagline">Auto-synced subtitles for Netflix</string>
+    <string name="pick_srt">Choose subtitle (.srt)</string>
+    <string name="srt_none">No subtitle selected yet</string>
+    <string name="srt_loaded">Loaded: %1$s — %2$d lines</string>
+    <string name="recent_label">Recently used</string>
+    <string name="start_overlay">Start overlay</string>
+    <string name="perm_hint">Grant the permission, then tap Start again</string>
+    <string name="started_hint">Started — open Netflix</string>
+    <string name="file_error">Couldn\'t open the file</string>
+    <string name="notif_title">Subly+ running</string>
+    <string name="notif_text">Subtitle overlay active</string>
+    <string name="a11y_desc">Automatically syncs subtitles to the player position.</string>
+</resources>
