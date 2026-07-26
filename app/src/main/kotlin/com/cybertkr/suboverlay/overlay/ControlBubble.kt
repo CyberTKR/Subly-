@@ -23,8 +23,6 @@ class ControlBubble(
     private val callbacks: Callbacks,
 ) {
     interface Callbacks {
-        fun onSync(); fun onTogglePlay(); fun onRewind()
-        fun onForward(); fun onRewindMin(); fun onForwardMin()
         fun onNudge(deltaMs: Long); fun onClose()
     }
 
@@ -38,11 +36,15 @@ class ControlBubble(
     private val boxH = radius * 2 + petSize
 
     private var isOpen = false
+
+    private var idleFabAlpha = 0.4f
+    private var idleDelayMs = 4000L
+
     private val hideHandler = Handler(Looper.getMainLooper())
     private val hideRunnable = Runnable { if (isOpen) collapse() }
     private val idleFade = Runnable {
         if (!isOpen) {
-            fab.animate().alpha(0f).setDuration(400).start()
+            fab.animate().alpha(idleFabAlpha).setDuration(400).start()
             time.animate().alpha(0f).setDuration(400).start()
         }
     }
@@ -134,7 +136,18 @@ class ControlBubble(
 
     private fun scheduleIdleFade() {
         hideHandler.removeCallbacks(idleFade)
-        hideHandler.postDelayed(idleFade, 4000)
+        if (idleDelayMs <= 0L) { wake(); return }
+        hideHandler.postDelayed(idleFade, idleDelayMs)
+    }
+
+    fun applyIdleConfig(alphaPercent: Int, fadeSeconds: Int) {
+        idleFabAlpha = alphaPercent.coerceIn(0, 100) / 100f
+        idleDelayMs = fadeSeconds.coerceAtLeast(0) * 1000L
+        if (isOpen) return
+        hideHandler.removeCallbacks(idleFade)
+        fab.animate().alpha(1f).setDuration(150).start()
+        time.animate().alpha(1f).setDuration(150).start()
+        if (idleDelayMs > 0L) scheduleIdleFade()
     }
 
     private fun wake() {
@@ -147,8 +160,6 @@ class ControlBubble(
         val remaining = (totalMs - posMs).coerceAtLeast(0)
         time.text = "${fmt(posMs)} / -${fmt(remaining)}"
     }
-
-    fun setPlaying(playing: Boolean) { }
 
     fun reclampToEdge() {
         params.x = clampX(params.x); params.y = clampY(params.y)

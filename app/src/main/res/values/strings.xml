@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Subly+</string>
-    <string name="tagline">Auto-synced subtitles for Netflix</string>
+    <string name="tagline">Subly+ — subtitle sync</string>
     <string name="pick_srt">Choose subtitle (.srt)</string>
     <string name="srt_none">No subtitle selected yet</string>
     <string name="srt_loaded">Loaded: %1$s — %2$d lines</string>
@@ -12,4 +12,20 @@
     <string name="notif_title">Subly+ running</string>
     <string name="notif_text">Subtitle overlay active</string>
     <string name="a11y_desc">Automatically syncs subtitles to the player position.</string>
+    <string name="perm_enable">Enable</string>
+    <string name="perm_warn_overlay">Overlay permission is off — the subtitle can\'t be shown</string>
+    <string name="perm_warn_a11y">Accessibility is off — auto-sync won\'t work</string>
+    <string name="perm_a11y_hint">Find Subly+ under Installed apps and turn it on</string>
+    <string name="a11y_label">Subly+ — subtitle sync</string>
+    <string name="a11y_disc_title">Why the Accessibility permission is needed</string>
+    <string name="a11y_disc_body">Subly+ uses Android\'s Accessibility service to keep your subtitles in sync with the video.\n\nThe service ONLY reads the player\'s on-screen position bar (the current time) so your loaded .srt subtitle appears at the right moment. It does not read screen content and does not collect, store, or share any personal or sensitive data — everything stays on your device.\n\nYou can turn this permission off at any time from Settings. Tap “Agree and enable” to continue.</string>
+    <string name="a11y_disc_agree">Agree and enable</string>
+    <string name="a11y_disc_cancel">Cancel</string>
+    <string name="settings_label">Overlay button</string>
+    <string name="idle_opacity">Idle opacity</string>
+    <string name="fade_delay">Auto-hide after</string>
+    <string name="opacity_hidden">Hidden</string>
+    <string name="opacity_pct">%d%%</string>
+    <string name="fade_never">Never hides</string>
+    <string name="fade_secs">%d s</string>
 </resources>

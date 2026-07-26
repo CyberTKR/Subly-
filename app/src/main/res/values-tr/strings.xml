@@ -1,5 +1,5 @@
 <resources>
-    <string name="tagline">Netflix\'e otomatik altyazı</string>
+    <string name="tagline">Subly+ — altyazı senkronu</string>
     <string name="pick_srt">Altyazı Seç (.srt)</string>
     <string name="srt_none">Henüz altyazı seçilmedi</string>
     <string name="srt_loaded">Yüklendi: %1$s — %2$d satır</string>
@@ -11,4 +11,20 @@
     <string name="notif_title">Subly+ çalışıyor</string>
     <string name="notif_text">Altyazı overlay aktif</string>
     <string name="a11y_desc">Altyazıyı oynatıcının konumuna otomatik senkronlar.</string>
+    <string name="perm_enable">Aç</string>
+    <string name="perm_warn_overlay">Overlay izni kapalı — altyazı gösterilemez</string>
+    <string name="perm_warn_a11y">Erişilebilirlik kapalı — oto-senkron çalışmaz</string>
+    <string name="perm_a11y_hint">Yüklü uygulamalar listesinden Subly+\'ı bulup aç</string>
+    <string name="a11y_label">Subly+ — altyazı senkronu</string>
+    <string name="a11y_disc_title">Erişilebilirlik izni neden gerekli</string>
+    <string name="a11y_disc_body">Subly+, altyazını videoyla otomatik senkron tutmak için Android\'in Erişilebilirlik hizmetini kullanır.\n\nHizmet YALNIZCA oynatıcının ekrandaki konum çubuğunu (geçerli süreyi) okur; böylece yüklediğin .srt altyazısı doğru anda görünür. Ekran içeriğini okumaz; kişisel veya hassas hiçbir veriyi toplamaz, saklamaz, paylaşmaz — her şey cihazında kalır.\n\nBu izni istediğin zaman Ayarlar\'dan kapatabilirsin. Devam etmek için “Kabul et ve aç”a dokun.</string>
+    <string name="a11y_disc_agree">Kabul et ve aç</string>
+    <string name="a11y_disc_cancel">Vazgeç</string>
+    <string name="settings_label">Overlay düğmesi</string>
+    <string name="idle_opacity">Boştayken görünürlük</string>
+    <string name="fade_delay">Şu süre sonra gizlen</string>
+    <string name="opacity_hidden">Görünmez</string>
+    <string name="opacity_pct">%%%d</string>
+    <string name="fade_never">Hiç gizlenmesin</string>
+    <string name="fade_secs">%d sn</string>
 </resources>

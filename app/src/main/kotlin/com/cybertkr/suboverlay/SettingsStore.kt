@@ -2,6 +2,7 @@ package com.cybertkr.suboverlay
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -39,7 +40,21 @@ class SettingsStore(private val context: Context) {
         }
     }
 
+    suspend fun getIdleAlphaPercent(): Int =
+        context.dataStore.data.first()[IDLE_ALPHA] ?: 40
+    suspend fun setIdleAlphaPercent(v: Int) {
+        context.dataStore.edit { it[IDLE_ALPHA] = v.coerceIn(0, 100) }
+    }
+
+    suspend fun getFadeSeconds(): Int =
+        context.dataStore.data.first()[FADE_SECS] ?: 4
+    suspend fun setFadeSeconds(v: Int) {
+        context.dataStore.edit { it[FADE_SECS] = v.coerceIn(0, 20) }
+    }
+
     private companion object {
         val RECENT = stringPreferencesKey("recent_srts")
+        val IDLE_ALPHA = intPreferencesKey("bubble_idle_alpha")
+        val FADE_SECS = intPreferencesKey("bubble_fade_secs")
     }
 }

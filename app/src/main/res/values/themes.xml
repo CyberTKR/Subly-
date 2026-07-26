@@ -1,3 +1,8 @@
 <resources>
-    <style name="Theme.SubOverlay" parent="Theme.AppCompat.DayNight.NoActionBar" />
+    <style name="Theme.SubOverlay" parent="Theme.MaterialComponents.NoActionBar.Bridge">
+        <item name="android:colorBackground">#0D0D0D</item>
+        <item name="android:windowBackground">#0D0D0D</item>
+        <item name="android:statusBarColor">#0D0D0D</item>
+        <item name="android:navigationBarColor">#0D0D0D</item>
+    </style>
 </resources>

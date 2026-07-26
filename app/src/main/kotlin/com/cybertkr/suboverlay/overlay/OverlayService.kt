@@ -28,29 +28,28 @@ class OverlayService : LifecycleService() {
 
     companion object {
         @Volatile private var instance: OverlayService? = null
+
+        fun applyLiveConfig(alphaPercent: Int, fadeSeconds: Int) {
+            val s = instance ?: return
+            s.mainHandler.post {
+                if (s::bubble.isInitialized) s.bubble.applyIdleConfig(alphaPercent, fadeSeconds)
+            }
+        }
+
+        fun markNetflixForeground() {
+            instance?.lastNetflixSeen = android.os.SystemClock.elapsedRealtime()
+        }
+
         fun bridgePosition(posMs: Long, totalMs: Long) {
             val s = instance ?: return
             if (totalMs > 0L) s.totalMs = totalMs
             val now = android.os.SystemClock.elapsedRealtime()
-
-            if (s.lastReadWall == 0L || now - s.lastReadWall >= 400L) {
-                if (s.lastReadWall != 0L) {
-                    val advanced = posMs - s.lastReadPos
-                    if (advanced in -250L..250L) {
-                        if (s.clock.isRunning) s.clock.pause(now)
-                    } else {
-                        if (!s.clock.isRunning) s.clock.resume(now)
-                    }
-                }
-                s.lastReadPos = posMs
-                s.lastReadWall = now
-            }
-
+            val target = posMs + s.userOffsetMs
             if (!s.autoSynced) {
-                s.clock.start(now, posMs + s.userOffsetMs)
+                s.clock.start(now, target)
                 s.autoSynced = true
-            } else if (kotlin.math.abs(posMs + s.userOffsetMs - s.clock.position(now)) > 1000L) {
-                s.clock.syncTo(now, posMs + s.userOffsetMs)
+            } else if (kotlin.math.abs(target - s.clock.position(now)) > 1000L) {
+                s.clock.syncTo(now, target)
             }
         }
     }
@@ -60,31 +59,25 @@ class OverlayService : LifecycleService() {
     private lateinit var bubble: ControlBubble
     private var totalMs: Long = 0L
     private var autoSynced = false
-    private var lastReadPos = 0L
-    private var lastReadWall = 0L
+    @Volatile private var lastNetflixSeen = 0L
     private var userOffsetMs = 0L
     private val settings by lazy { com.cybertkr.suboverlay.SettingsStore(this) }
 
     val clock = PlaybackClock()
     private var engine = TimelineEngine(emptyList())
+    private val mainHandler = Handler(Looper.getMainLooper())
     private val ticker = Handler(Looper.getMainLooper())
     private val tickRunnable = object : Runnable {
         override fun run() {
-            val pos = clock.position(SystemClock.elapsedRealtime())
-            subtitleView.setLine(engine.cueAt(pos)?.text)
+            val now = SystemClock.elapsedRealtime()
+            val pos = clock.position(now)
+            val hidden = now - lastNetflixSeen >= 3000L
+            subtitleView.setLine(if (hidden) null else engine.cueAt(pos)?.text)
             if (this@OverlayService::bubble.isInitialized) {
                 bubble.updateTime(pos.coerceIn(0, totalMs), totalMs)
-                bubble.setPlaying(clock.isRunning)
             }
             ticker.postDelayed(this, 30)
         }
-    }
-
-    fun onSyncStart(atPositionMs: Long) {
-        engine = TimelineEngine(SubtitleRepository.cues)
-        totalMs = SubtitleRepository.cues.maxOfOrNull { it.endMs } ?: 0L
-        clock.start(SystemClock.elapsedRealtime(), atPositionMs)
-        autoSynced = true
     }
 
     override fun onCreate() {
@@ -98,28 +91,11 @@ class OverlayService : LifecycleService() {
         totalMs = SubtitleRepository.cues.maxOfOrNull { it.endMs } ?: 0L
         ticker.post(tickRunnable)
         addBubble()
-    }
-
-    private val countdownHandler = Handler(Looper.getMainLooper())
-    private var countingDown = false
-
-    private fun beginCountdown(offsetMs: Long) {
-        if (countingDown) return
-        countingDown = true
-        val steps = listOf("3", "2", "1", "BAŞLA")
-        var i = 0
-        val r = object : Runnable {
-            override fun run() {
-                if (i < steps.size) {
-                    subtitleView.setLine(steps[i]); i++
-                    countdownHandler.postDelayed(this, 1000)
-                } else {
-                    countingDown = false
-                    onSyncStart(offsetMs)
-                }
-            }
+        lifecycleScope.launch {
+            val alpha = settings.getIdleAlphaPercent()
+            val secs = settings.getFadeSeconds()
+            if (this@OverlayService::bubble.isInitialized) bubble.applyIdleConfig(alpha, secs)
         }
-        countdownHandler.post(r)
     }
 
     private fun addBubble() {
@@ -133,16 +109,6 @@ class OverlayService : LifecycleService() {
         ).apply { gravity = Gravity.TOP or Gravity.START; x = 24; y = 160 }
 
         bubble = ControlBubble(this, wm, bubbleParams, object : ControlBubble.Callbacks {
-            override fun onSync() { beginCountdown(SubtitleRepository.startOffsetMs) }
-            override fun onTogglePlay() {
-                val now = SystemClock.elapsedRealtime()
-                if (clock.isRunning) clock.pause(now) else clock.resume(now)
-                bubble.setPlaying(clock.isRunning)
-            }
-            override fun onRewind() { clock.nudge(-10_000, SystemClock.elapsedRealtime()) }
-            override fun onForward() { clock.nudge(+10_000, SystemClock.elapsedRealtime()) }
-            override fun onRewindMin() { clock.nudge(-60_000, SystemClock.elapsedRealtime()) }
-            override fun onForwardMin() { clock.nudge(+60_000, SystemClock.elapsedRealtime()) }
             override fun onNudge(deltaMs: Long) {
                 val now = android.os.SystemClock.elapsedRealtime()
                 userOffsetMs += deltaMs
@@ -153,7 +119,6 @@ class OverlayService : LifecycleService() {
             override fun onClose() { stopSelf() }
         })
         wm.addView(bubble.view(), bubbleParams)
-        bubble.setPlaying(clock.isRunning)
     }
 
     private fun addSubtitleWindow() {
@@ -209,7 +174,6 @@ class OverlayService : LifecycleService() {
 
     override fun onDestroy() {
         ticker.removeCallbacks(tickRunnable)
-        countdownHandler.removeCallbacksAndMessages(null)
         if (this::bubble.isInitialized) wm.removeView(bubble.view())
         if (this::subtitleView.isInitialized) wm.removeView(subtitleView)
         instance = null

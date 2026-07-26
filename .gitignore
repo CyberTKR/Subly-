@@ -1,10 +1,11 @@
+*.iml
 .gradle/
 build/
-*/build/
-/local.properties
+local.properties
+gradle.properties
 .idea/
-*.iml
-.DS_Store
-/captures
-*.keystore
 *.jks
+*.keystore
+*.p12
+play-key.json
+*service_account*.json

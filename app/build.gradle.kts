@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.cybertkr.suboverlay"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.cybertkr.suboverlay"
         minSdk = 28
-        targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        targetSdk = 36
+        versionCode = 4
+        versionName = "0.1.3"
     }
     buildFeatures { viewBinding = true }
     compileOptions {

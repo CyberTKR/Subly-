@@ -57,7 +57,119 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, getString(R.string.started_hint), Toast.LENGTH_SHORT).show()
         }
 
+        setupOverlaySettings()
         renderRecent()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updatePermBanner()
+    }
+
+    private fun updatePermBanner() {
+        val overlayOk = Settings.canDrawOverlays(this)
+        val a11yOk = isAccessibilityEnabled()
+        when {
+            !overlayOk -> {
+                binding.permBanner.visibility = View.VISIBLE
+                binding.permBannerText.setText(R.string.perm_warn_overlay)
+                binding.permBanner.setOnClickListener {
+                    startActivity(
+                        Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:$packageName")
+                        )
+                    )
+                }
+            }
+            !a11yOk -> {
+                binding.permBanner.visibility = View.VISIBLE
+                binding.permBannerText.setText(R.string.perm_warn_a11y)
+                binding.permBanner.setOnClickListener { showAccessibilityDisclosure() }
+            }
+            else -> binding.permBanner.visibility = View.GONE
+        }
+    }
+
+    private fun showAccessibilityDisclosure() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle(R.string.a11y_disc_title)
+            .setMessage(R.string.a11y_disc_body)
+            .setPositiveButton(R.string.a11y_disc_agree) { _, _ -> openAccessibilitySettings() }
+            .setNegativeButton(R.string.a11y_disc_cancel) { d, _ -> d.dismiss() }
+            .show()
+    }
+
+    private fun openAccessibilitySettings() {
+        val cn = android.content.ComponentName(
+            this, com.cybertkr.suboverlay.a11y.SubtitleSyncService::class.java
+        ).flattenToString()
+        val args = android.os.Bundle().apply { putString(":settings:fragment_args_key", cn) }
+        val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
+            putExtra(":settings:fragment_args_key", cn)
+            putExtra(":settings:show_fragment_args", args)
+        }
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
+        Toast.makeText(this, getString(R.string.perm_a11y_hint), Toast.LENGTH_LONG).show()
+    }
+
+    private fun isAccessibilityEnabled(): Boolean {
+        val flat = Settings.Secure.getString(
+            contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+        val svc = "$packageName/${com.cybertkr.suboverlay.a11y.SubtitleSyncService::class.java.name}"
+        return flat.split(':').any { it.equals(svc, ignoreCase = true) }
+    }
+
+    private fun setupOverlaySettings() {
+        lifecycleScope.launch {
+            val alpha = settings.getIdleAlphaPercent()
+            val secs = settings.getFadeSeconds()
+            binding.seekOpacity.value = alpha.coerceIn(0, 100).toFloat()
+            binding.seekFade.value = secs.coerceIn(0, 20).toFloat()
+            renderOpacityLabel(alpha)
+            renderFadeLabel(secs)
+        }
+        binding.seekOpacity.addOnChangeListener { _, value, fromUser ->
+            renderOpacityLabel(value.toInt())
+            if (fromUser) applyLive()
+        }
+        binding.seekOpacity.addOnSliderTouchListener(object : com.google.android.material.slider.Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: com.google.android.material.slider.Slider) {}
+            override fun onStopTrackingTouch(slider: com.google.android.material.slider.Slider) {
+                lifecycleScope.launch { settings.setIdleAlphaPercent(slider.value.toInt()) }
+            }
+        })
+        binding.seekFade.addOnChangeListener { _, value, fromUser ->
+            renderFadeLabel(value.toInt())
+            if (fromUser) applyLive()
+        }
+        binding.seekFade.addOnSliderTouchListener(object : com.google.android.material.slider.Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: com.google.android.material.slider.Slider) {}
+            override fun onStopTrackingTouch(slider: com.google.android.material.slider.Slider) {
+                lifecycleScope.launch { settings.setFadeSeconds(slider.value.toInt()) }
+            }
+        })
+    }
+
+    private fun applyLive() {
+        com.cybertkr.suboverlay.overlay.OverlayService.applyLiveConfig(
+            binding.seekOpacity.value.toInt(), binding.seekFade.value.toInt()
+        )
+    }
+
+    private fun renderOpacityLabel(v: Int) {
+        binding.opacityValue.text =
+            if (v <= 0) getString(R.string.opacity_hidden) else getString(R.string.opacity_pct, v)
+    }
+
+    private fun renderFadeLabel(v: Int) {
+        binding.fadeValue.text =
+            if (v <= 0) getString(R.string.fade_never) else getString(R.string.fade_secs, v)
     }
 
     private fun loadSrt(uri: Uri) {
@@ -102,10 +214,29 @@ class MainActivity : AppCompatActivity() {
         return uri.lastPathSegment?.substringAfterLast('/') ?: "altyazı"
     }
 
+    private var recentExpanded = false
+
+    private fun applyRecentExpanded() {
+        binding.recentContainer.visibility = if (recentExpanded) View.VISIBLE else View.GONE
+        val arrow = if (recentExpanded) " ▾" else " ▸"
+        binding.recentLabel.text = getString(R.string.recent_label) + arrow
+    }
+
     private fun renderRecent() {
         lifecycleScope.launch {
             val recent = settings.getRecent()
-            binding.recentLabel.visibility = if (recent.isEmpty()) View.GONE else View.VISIBLE
+            if (recent.isEmpty()) {
+                binding.recentLabel.visibility = View.GONE
+                binding.recentContainer.visibility = View.GONE
+            } else {
+                binding.recentLabel.visibility = View.VISIBLE
+                binding.recentLabel.isClickable = true
+                binding.recentLabel.setOnClickListener {
+                    recentExpanded = !recentExpanded
+                    applyRecentExpanded()
+                }
+                applyRecentExpanded()
+            }
             binding.recentContainer.removeAllViews()
             for ((uriStr, name) in recent) {
                 val row = TextView(this@MainActivity).apply {

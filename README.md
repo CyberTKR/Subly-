@@ -55,7 +55,7 @@ echo "sdk.dir=/path/to/Android/sdk" > local.properties
 ./gradlew :app:installDebug
 ```
 
-- `minSdk 28`, `targetSdk 34`, `compileSdk 34`.
+- `minSdk 28`, `targetSdk 36`, `compileSdk 36` (AGP 8.9.1 / Gradle 8.11.1).
 - A release/obfuscated build: `./gradlew :app:assembleRelease` (R8 enabled;
   provide a keystore via `RELEASE_STORE_FILE` / `RELEASE_STORE_PASSWORD` /
   `RELEASE_KEY_ALIAS` / `RELEASE_KEY_PASSWORD` gradle properties to sign it).
@@ -69,17 +69,22 @@ echo "sdk.dir=/path/to/Android/sdk" > local.properties
 4. Play your video; tap the screen once so the player controls appear, and the
    subtitles lock to the current position.
 
-The floating control lets you nudge the timing by ±0.1s and close the overlay;
-it fades away when idle and returns on touch.
+The floating control lets you nudge the timing by ±0.1s and close the overlay.
+The setup screen also exposes its idle opacity and auto-hide delay. When another
+app is in the foreground the subtitle is hidden automatically.
 
 ## A note on the accessibility permission
 
 Subly+ uses an `AccessibilityService` to read the player's playback position.
 This is the only way to auto-sync on stock Android. It reads **only** the
 seek-bar position of the configured player and sends nothing off the device.
-Because this is not a disability-assistance use of the accessibility API,
-distributing on Google Play would require an explicit in-app disclosure and
-review; the project is intended for sideloading / personal use.
+
+Because this is not a disability-assistance use of the accessibility API, before
+the service can be enabled the app shows a prominent in-app disclosure that
+explains why and how the API is used and asks for explicit consent, and the
+Google Play listing states the same. Google Play distribution still requires
+review and may reject accessibility-based tools; sideloading works without any
+of that.
 
 ## License
 
