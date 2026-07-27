@@ -1,14 +1,35 @@
+<div align="center">
+
+<img src="docs/img/icon.png" width="96" alt="Subly+ icon" />
+
 # Subly+
 
-Overlay your own `.srt` subtitles on top of a streaming player and keep them
-**automatically in sync** with playback — even after you seek or scrub.
+**Auto-synced `.srt` subtitle overlay for Android video players.**
 
-Subly+ is a small, native Android app. You pick a subtitle file, start the
-overlay, and the subtitles are drawn on top of the video and locked to the
-player's real position.
+Pick a subtitle file, start the overlay, and your subtitles are drawn on top of
+the video and locked to the player's real playback position — even after you
+seek or scrub.
 
-> Not affiliated with, endorsed by, or connected to Netflix or any streaming
+![License](https://img.shields.io/badge/License-MIT-2E7CF6)
+![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
+![minSdk](https://img.shields.io/badge/minSdk-28-14B8A6)
+![Kotlin](https://img.shields.io/badge/Kotlin-100%25-7F52FF?logo=kotlin&logoColor=white)
+
+</div>
+
+> ⚠️ Not affiliated with, endorsed by, or connected to Netflix or any streaming
 > service. "Netflix" is a trademark of its respective owner.
+
+---
+
+## Features
+
+- 🎯 **Auto-sync** — subtitles lock to the player's real position; seeks snap instantly
+- 🪟 **Draws over any app** — works even with `FLAG_SECURE` players (which black out screenshots but not overlays)
+- 🎚️ **Fine control** — nudge timing by ±0.1 s; adjustable idle opacity and auto-hide delay
+- 🙈 **Context-aware** — the subtitle hides automatically when another app is in the foreground
+- 🌗 **Clean dark UI** — near-black theme, English + Turkish
+- 🔒 **Private by design** — no account, no ads, no analytics, no network; everything stays on your device
 
 ## How it works
 
@@ -31,15 +52,14 @@ and only the public accessibility position is read.
 
 ## Modules
 
-- `:core` — pure Kotlin/JVM, unit-tested: SRT parsing, charset detection
-  (UTF-8 → Windows-1254 fallback), timeline lookup, the playback clock.
-- `:app` — Android: the overlay foreground service, the floating control,
-  the accessibility sync service, and the setup screen.
+| Module  | What |
+|---------|------|
+| `:core` | Pure Kotlin/JVM, unit-tested: SRT parsing, charset detection (UTF-8 → Windows-1254 fallback), timeline lookup, the playback clock. |
+| `:app`  | Android: the overlay foreground service, the floating control, the accessibility sync service, and the setup screen. |
 
 ## Build
 
-Requires a JDK 17+ (the Android Studio bundled JBR works well) and the Android
-SDK.
+Requires JDK 17+ (the Android Studio bundled JBR works well) and the Android SDK.
 
 ```bash
 # point Gradle at a JDK 17+
@@ -56,22 +76,19 @@ echo "sdk.dir=/path/to/Android/sdk" > local.properties
 ```
 
 - `minSdk 28`, `targetSdk 36`, `compileSdk 36` (AGP 8.9.1 / Gradle 8.11.1).
-- A release/obfuscated build: `./gradlew :app:assembleRelease` (R8 enabled;
-  provide a keystore via `RELEASE_STORE_FILE` / `RELEASE_STORE_PASSWORD` /
-  `RELEASE_KEY_ALIAS` / `RELEASE_KEY_PASSWORD` gradle properties to sign it).
+- Release build: `./gradlew :app:bundleRelease` (R8 enabled). Provide a keystore
+  via the `RELEASE_STORE_FILE` / `RELEASE_STORE_PASSWORD` / `RELEASE_KEY_ALIAS` /
+  `RELEASE_KEY_PASSWORD` Gradle properties to sign it.
 
 ## Using it
 
 1. Open the app, tap **Choose subtitle (.srt)** and pick a file.
 2. Tap **Start overlay** — grant the "draw over other apps" permission if asked.
-3. Enable the accessibility service (**Settings → Accessibility → Subly+**) so
-   the subtitles can auto-sync to the player.
-4. Play your video; tap the screen once so the player controls appear, and the
-   subtitles lock to the current position.
+3. Enable the accessibility service when prompted (a disclosure explains why).
+4. Play your video — the subtitles lock to the current position and follow along.
 
-The floating control lets you nudge the timing by ±0.1s and close the overlay.
-The setup screen also exposes its idle opacity and auto-hide delay. When another
-app is in the foreground the subtitle is hidden automatically.
+The floating control lets you fine-tune timing by ±0.1 s and close the overlay;
+the setup screen exposes idle opacity and auto-hide delay.
 
 ## A note on the accessibility permission
 
@@ -81,11 +98,11 @@ seek-bar position of the configured player and sends nothing off the device.
 
 Because this is not a disability-assistance use of the accessibility API, before
 the service can be enabled the app shows a prominent in-app disclosure that
-explains why and how the API is used and asks for explicit consent, and the
-Google Play listing states the same. Google Play distribution still requires
-review and may reject accessibility-based tools; sideloading works without any
-of that.
+explains why and how the API is used and asks for explicit consent. Google Play
+distribution requires review and may restrict accessibility-based tools;
+sideloading works without any of that. See [docs/privacy.html](docs/privacy.html)
+for the full privacy policy.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[MIT](LICENSE) © CyberTKR
