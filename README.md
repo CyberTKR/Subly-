@@ -4,11 +4,13 @@
 
 # Subly+
 
-**Auto-synced `.srt` subtitle overlay for Android video players.**
+**Auto-synced `.srt` subtitle overlay for Netflix on Android** — and extensible
+to other video apps.
 
 Pick a subtitle file, start the overlay, and your subtitles are drawn on top of
 the video and locked to the player's real playback position — even after you
-seek or scrub.
+seek or scrub. Currently tuned for the Netflix app; the same approach works for
+any Android player that exposes a seek bar (see [Compatibility](#compatibility)).
 
 ![License](https://img.shields.io/badge/License-MIT-2E7CF6)
 ![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?logo=android&logoColor=white)
@@ -49,6 +51,23 @@ approach is not possible on iOS):
 
 No DRM is touched and no video is captured — only the app's own text is drawn,
 and only the public accessibility position is read.
+
+## Compatibility
+
+Subly+ currently targets the **Netflix** Android app (`com.netflix.mediaclient`),
+which is what it's been built and tested against. Nothing about the technique is
+Netflix-specific, though — it works for any Android video app that exposes its
+playback position as a seek bar in the accessibility tree.
+
+Adding another app is small and a great first contribution:
+
+1. Add the app's package to `packageNames` in
+   `app/src/main/res/xml/a11y_config.xml`.
+2. Point the package check in `SubtitleSyncService` / `OverlayService` at it
+   (or generalize it to a configurable list).
+3. Confirm the player's seek-bar node reports a `RangeInfo` in milliseconds.
+
+PRs that add well-tested support for other players are welcome.
 
 ## Modules
 
