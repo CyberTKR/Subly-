@@ -100,8 +100,7 @@ Because this is not a disability-assistance use of the accessibility API, before
 the service can be enabled the app shows a prominent in-app disclosure that
 explains why and how the API is used and asks for explicit consent. Google Play
 distribution requires review and may restrict accessibility-based tools;
-sideloading works without any of that. See [docs/privacy.html](docs/privacy.html)
-for the full privacy policy.
+sideloading works without any of that.
 
 ## License
 
